@@ -64,17 +64,17 @@
         const stories = [
             {
                 title: "토끼와 거북이",
-                // LibriVox의 공개 도메인 오디오
-                audio: "https://ia800605.us.archive.org/7/items/aesop_fables_volume_one_0711_librivox/fables_01_00_aesop.mp3",
-                // Wikimedia Commons의 공개 도메인 이미지
-                image: "https://upload.wikimedia.org/wikipedia/commons/3/3d/The_Tortoise_and_the_Hare_-_Project_Gutenberg_eText_19994.jpg"
+                // 토끼와 거북이 오디오 (TTS로 변환된 MP3)
+                audio: "https://drive.google.com/uc?export=download&id=1-2X_WwuEkI0rQj5lICzdRhyT9YpR-OUa",
+                // 토끼와 거북이 이미지
+                image: "https://i.ibb.co/VqGfXVw/tortoise-hare.jpg"
             },
             {
                 title: "개미와 베짱이",
-                // LibriVox의 공개 도메인 오디오
-                audio: "https://ia800605.us.archive.org/7/items/aesop_fables_volume_one_0711_librivox/fables_01_01_aesop.mp3",
-                // Wikimedia Commons의 공개 도메인 이미지
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/The_Ant_and_the_Grasshopper_-_Project_Gutenberg_eText_19994.jpg/1024px-The_Ant_and_the_Grasshopper_-_Project_Gutenberg_eText_19994.jpg"
+                // 개미와 베짱이 오디오 (TTS로 변환된 MP3)
+                audio: "https://drive.google.com/uc?export=download&id=1-5KwzFh6HE_6R9J7p_9vE4B4w5J-JZXm",
+                // 개미와 베짱이 이미지
+                image: "https://i.ibb.co/0M7Zknb/ant-grasshopper.jpg"
             }
         ];
 
@@ -110,23 +110,42 @@
             const audio = document.getElementById('storyAudio');
             const image = document.getElementById('storyImage');
             
+            // 이전 오디오 이벤트 리스너 제거
             if (currentAudio) {
                 currentAudio.removeEventListener('ended', handleAudioEnd);
             }
             
+            // 이미지 로딩 시작 전 로딩 메시지 표시
+            image.src = '';
+            image.alt = '이미지 로딩 중...';
+            
+            // 이미지 로드
+            const tempImage = new Image();
+            tempImage.onload = function() {
+                image.src = story.image;
+                image.alt = story.title;
+            };
+            tempImage.src = story.image;
+            
+            // 오디오 설정
             audio.src = story.audio;
-            image.src = story.image;
             audio.style.display = 'block';
             
             currentAudio = audio;
             audio.addEventListener('ended', handleAudioEnd);
             
+            // 오디오 재생
             try {
-                audio.play().catch(error => {
-                    console.log('오디오 재생 실패:', error);
-                });
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log('오디오 재생 실패:', error);
+                        messageElement.textContent = '오디오를 재생할 수 없습니다. 다시 시도해주세요.';
+                    });
+                }
             } catch (error) {
                 console.log('오디오 재생 중 오류 발생:', error);
+                messageElement.textContent = '오디오 재생 중 오류가 발생했습니다.';
             }
         }
 

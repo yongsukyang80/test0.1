@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>양패밀리 이야기</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>양패밀리 이야기</h1>
+        <div class="family-members">
+            <div class="member">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="yongseok" name="family">
+                    <span class="custom-checkbox"></span>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1542273917363-3b1817f69a2d" alt="숲 배경">
+                        <span class="name-tag">양용석</span>
+                    </div>
+                </label>
+            </div>
+            <div class="member">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="jeyeon" name="family">
+                    <span class="custom-checkbox"></span>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1511497584788-876760111969" alt="숲 배경">
+                        <span class="name-tag">오제연</span>
+                    </div>
+                </label>
+            </div>
+            <div class="member">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="kihyun" name="family">
+                    <span class="custom-checkbox"></span>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1503435824048-a799a3a84bf7" alt="숲 배경">
+                        <span class="name-tag">양기현</span>
+                    </div>
+                </label>
+            </div>
+            <div class="member">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="kiyun" name="family">
+                    <span class="custom-checkbox"></span>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e" alt="숲 배경">
+                        <span class="name-tag">양기윤</span>
+                    </div>
+                </label>
+            </div>
+        </div>
+        <div id="message" class="message"></div>
+        <div id="story" class="story-container" style="display: none;">
+            <img id="storyImage" src="" alt="이솝우화 삽화" class="story-image">
+            <audio id="storyAudio" controls>
+                <source src="" type="audio/mpeg">
+            </audio>
+        </div>
+    </div>
+    <script>
+        const stories = [
+            {
+                title: "토끼와 거북이",
+                // LibriVox의 공개 도메인 오디오
+                audio: "https://ia800605.us.archive.org/7/items/aesop_fables_volume_one_0711_librivox/fables_01_00_aesop.mp3",
+                // Wikimedia Commons의 공개 도메인 이미지
+                image: "https://upload.wikimedia.org/wikipedia/commons/3/3d/The_Tortoise_and_the_Hare_-_Project_Gutenberg_eText_19994.jpg"
+            },
+            {
+                title: "개미와 베짱이",
+                // LibriVox의 공개 도메인 오디오
+                audio: "https://ia800605.us.archive.org/7/items/aesop_fables_volume_one_0711_librivox/fables_01_01_aesop.mp3",
+                // Wikimedia Commons의 공개 도메인 이미지
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/The_Ant_and_the_Grasshopper_-_Project_Gutenberg_eText_19994.jpg/1024px-The_Ant_and_the_Grasshopper_-_Project_Gutenberg_eText_19994.jpg"
+            }
+        ];
+
+        let currentStoryIndex = 0;
+        let currentAudio = null;
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', checkSelection);
+        });
+
+        function checkSelection() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const messageElement = document.getElementById('message');
+            const storyElement = document.getElementById('story');
+            
+            if (checkedCount === 4) {
+                messageElement.textContent = '';
+                storyElement.style.display = 'block';
+                playStory(currentStoryIndex);
+            } else {
+                messageElement.textContent = '양패밀리 이야기를 듣고 싶으면 모두 선택하세요';
+                storyElement.style.display = 'none';
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio.currentTime = 0;
+                }
+            }
+        }
+
+        function playStory(index) {
+            const story = stories[index];
+            const audio = document.getElementById('storyAudio');
+            const image = document.getElementById('storyImage');
+            
+            if (currentAudio) {
+                currentAudio.removeEventListener('ended', handleAudioEnd);
+            }
+            
+            audio.src = story.audio;
+            image.src = story.image;
+            audio.style.display = 'block';
+            
+            currentAudio = audio;
+            audio.addEventListener('ended', handleAudioEnd);
+            
+            try {
+                audio.play().catch(error => {
+                    console.log('오디오 재생 실패:', error);
+                });
+            } catch (error) {
+                console.log('오디오 재생 중 오류 발생:', error);
+            }
+        }
+
+        function handleAudioEnd() {
+            currentStoryIndex = (currentStoryIndex + 1) % stories.length;
+            setTimeout(() => playStory(currentStoryIndex), 1000);
+        }
+    </script>
+</body>
+</html> 
